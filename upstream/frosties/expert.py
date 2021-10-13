@@ -8,8 +8,7 @@ class UpstreamExpert(UpstreamBase):
         super().__init__(**kwargs)
 
         cfg = torch.load(model_config)
-        self.model = Frosties(cfg)
-        self.model = self.model.load_from_checkpoint(ckpt)
+        self.model = Frosties(cfg).load_from_checkpoint(ckpt)
 
     def forward(self, wavs):
         wavs = pad_sequence(wavs, batch_first=True)
