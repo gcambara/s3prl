@@ -1,28 +1,15 @@
-# -*- coding: utf-8 -*- #
-"""*********************************************************************************************"""
-#   FileName     [ upstream/pase/expert.py ]
-#   Synopsis     [ the pase wrapper ]
-#   Author       [ santi-pdp/pase ]
-#   Reference    [ https://github.com/santi-pdp/pase/blob/master/pase ]
-"""*********************************************************************************************"""
-
-
+import torch
 from torch.nn.utils.rnn import pad_sequence
-
 from upstream.interfaces import UpstreamBase
-from pase.models.frontend import wf_builder
-
+from src.models.frosties import Frosties
 
 class UpstreamExpert(UpstreamBase):
     def __init__(self, ckpt, model_config, **kwargs):
         super().__init__(**kwargs)
 
-        def build_pase(ckpt, model_config):
-            pase = wf_builder(model_config)
-            pase.load_pretrained(ckpt, load_last=True, verbose=False)
-            return pase
-
-        self.model = build_pase(ckpt, model_config)
+        cfg = torch.load(model_config)
+        self.model = Frosties(cfg)
+        self.model = self.model.load_from_checkpoint(ckpt)
 
     def forward(self, wavs):
         wavs = pad_sequence(wavs, batch_first=True)
